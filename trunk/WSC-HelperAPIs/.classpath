@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/wsc-19.jar" sourcepath="E:/ab/code/sfdc-wsc/wsc19/java/src"/>
+	<classpathentry kind="lib" path="lib/sfdc-wsc-19-apex.jar"/>
+	<classpathentry kind="lib" path="lib/sfdc-wsc-19-enterprise.jar"/>
+	<classpathentry kind="lib" path="lib/sfdc-wsc-19-metadata.jar"/>
+	<classpathentry kind="lib" path="lib/sfdc-wsc-19-partner.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
