@@ -1,0 +1,35 @@
+#labels Featured
+This page explains about various components of Tolerado
+
+= Introduction =
+
+Tolerado has 3 high level components.
+
+ # ToleradoStub(s) 
+ # ToleradoQuery  
+ # ToleradoSObject 
+
+== ToleradoStub(s) ==
+These stubs are set of huge wrapper classes over all the web service calls exposed by partner, metadata and apex web service calls. It gives the fault tolerant behavior to each web service method. 
+We are providing ToleradoStub implementation for 4 salesforce WSDLs i.e. enterprise, partner, apex and metadata. More details below
+
+|| *WSDL* || *Tolerado Stub* || *Code* || 
+|| partner.wsdl || ToleradoPartnerStub || [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/partner/ToleradoPartnerStub.java here] ||  
+|| metadata.wsdl || ToleradoMetaStub || [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/metadata/ToleradoMetaStub.java here] ||
+|| apex.wsdl || ToleradoApexStub || [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/apex/ToleradoApexStub.java here] ||
+|| enterprise.wsdl || ToleradoEnterpriseStub || [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/enterprise/ToleradoEnterpriseStub.java here] ||  
+
+*Code samples* for ToleradoStubs can be found [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoStubs here]
+
+== ToleradoQuery ==
+Its a partner query helper class. When querying with partner binding you can directly fetch only 500 records. To fetch more then 500 one needs to use queryMore() API, this API requires setting some headers and maintaining a cursor on client. This class simplifies and exposes and easy to use interface to queryMore() API, so it does all the ground work for making the call correctly.
+
+ * Complete Source for ToleradoQuery is available [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/partner/ToleradoQuery.java here]
+ * Tolerado Query [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoQuery Code Samples]
+
+
+== ToleradoSobject ==
+Wraps the com.sforce.soap.partner.sobject.SObject class, so that creating, updating and working with attributes can be pretty correct and easy.
+
+ * Complete source of ToleradoSobject is available [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/trunk/Tolerado-WSC/src/com/tgerm/tolerado/wsc/partner/ToleradoSobject.java here]
+ * ToleradoSobject [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoSObject Code samples]

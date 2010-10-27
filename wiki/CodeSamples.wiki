@@ -1,0 +1,11 @@
+#labels Featured
+This page gives pointers to Code samples for various components of Tolerado. As there are 3 major components of Tolerado, code samples for each is detailed on a separate page. 
+
+Here are the links to all 3 major components
+
+ # [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoStubs ToleradoStub Code Samples] 
+ # [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoQuery ToleradoQuery Code Samples] 
+ # [http://code.google.com/p/tolerado-sfdc-wsc-apis/wiki/CodeSamplesToleradoSObject ToleradoSObject Code Samples] 
+
+
+All source code mentioned in these samples can be checked out from SVN also. Its checked in as a complete Java Project [http://code.google.com/p/tolerado-sfdc-wsc-apis/source/browse/#svn/trunk/Tolerado-WSC-JunitTests here]
