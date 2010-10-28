@@ -1,0 +1,8 @@
+Explains, what contributes to a Tolerado releases
+
+= 1.0.1 (27 Oct 2010) =
+
+ * Upgraded to latest WSC-API (wsc-20.jar)
+ * Upgraded to winter'11 v20 of SFDC Web Service APIs
+ * Added AllOrNone Soap Header support to Tolerado Partner & Enterprise stubs.
+ * Updated Test cases to reflect the same.
