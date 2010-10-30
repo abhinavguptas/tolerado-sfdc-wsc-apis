@@ -60,7 +60,8 @@ public class LoginCfg {
 		}
 		String user = props.getProperty("user");
 		String pass = props.getProperty("pass");
-		credential = new Credential(user, pass);
+		String environment = props.getProperty("environment");
+		credential = new Credential(user, pass, Credential.Environment.valueOf(environment));
 	}
 
 	public Credential getCredential() {

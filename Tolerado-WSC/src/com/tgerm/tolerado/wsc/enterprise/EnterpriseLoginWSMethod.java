@@ -34,6 +34,7 @@ import com.sforce.soap.enterprise.wsc.EnterpriseConnection;
 import com.sforce.soap.enterprise.wsc.LoginResult;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
+import com.tgerm.tolerado.wsc.core.CoreUtil;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.method.WSErrorHandler;
@@ -80,6 +81,12 @@ public class EnterpriseLoginWSMethod extends
 		ConnectorConfig entConfig = new ConnectorConfig();
 		// IMPORTANT : This will not let EnterpriseConnection do the login
 		entConfig.setManualLogin(true);
+
+		// Prepare End point URL as per the Env, API Version and Host
+		String endpoint = CoreUtil.toEnterpriseEndPoint(credential);
+		entConfig.setAuthEndpoint(endpoint);
+		entConfig.setServiceEndpoint(endpoint);
+
 		EnterpriseConnection entConn;
 		try {
 			entConn = Connector.newConnection(entConfig);

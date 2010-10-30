@@ -44,11 +44,9 @@ public class PartnerLoginDriver implements LoginDriver {
 
 	public final class PartnerSession extends ToleradoSession {
 		private final LoginResult loginResult;
-		private final LoginDriver driver;
 
-		private PartnerSession(LoginResult lres, LoginDriver driver) {
+		private PartnerSession(LoginResult lres) {
 			this.loginResult = lres;
-			this.driver = driver;
 		}
 
 		@Override
@@ -75,11 +73,6 @@ public class PartnerLoginDriver implements LoginDriver {
 		}
 
 		@Override
-		public LoginDriver getLoginDriver() {
-			return driver;
-		}
-
-		@Override
 		public WSErrorHandler getErrorHandler() {
 			return new PartnerWSErrorHandler();
 		}
@@ -89,8 +82,13 @@ public class PartnerLoginDriver implements LoginDriver {
 	public ToleradoSession login(Credential cred) {
 		PartnerLoginWSMethod loginWSMethod = new PartnerLoginWSMethod(cred);
 		final LoginResult lres = loginWSMethod.invoke(null);
-		ToleradoSession toleradoSession = new PartnerSession(lres, this);
+		ToleradoSession toleradoSession = new PartnerSession(lres);
 		return toleradoSession;
+	}
+
+	@Override
+	public Type getType() {
+		return Type.Partner;
 	}
 
 }

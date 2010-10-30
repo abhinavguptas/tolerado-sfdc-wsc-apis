@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sforce.soap.metadata.wsc.DescribeMetadataResult;
 import com.tgerm.tolerado.samples.cfg.LoginCfg;
 import com.tgerm.tolerado.wsc.core.Credential;
+import com.tgerm.tolerado.wsc.core.ToleradoSession;
 import com.tgerm.tolerado.wsc.metadata.ToleradoMetaStub;
 
 public class MetadataTest extends TestCase {
@@ -47,6 +48,20 @@ public class MetadataTest extends TestCase {
 		ToleradoMetaStub stub = new ToleradoMetaStub(credential);
 		log.debug("Making a describe call using Metadata WSDL");
 		DescribeMetadataResult res = stub.describeMetadata(15.0);
+		Assert.assertNotNull(res);
+	}
+
+	public void testCRUDOnContactViaSessionToken() throws Exception {
+		ToleradoMetaStub stub = new ToleradoMetaStub(credential);
+		ToleradoSession session = stub.getSession();
+		Credential tok = Credential.createFromSessionToken(session.getSessionId(),
+				session.getPartnerServerUrl());
+		// Create fresh stub using sessionid and serverurl only
+		// no credential given here
+		ToleradoMetaStub stubFromToken = new ToleradoMetaStub(tok);
+
+		log.debug("Making a describe call using Metadata WSDL via session token");
+		DescribeMetadataResult res = stubFromToken.describeMetadata(15.0);
 		Assert.assertNotNull(res);
 	}
 }

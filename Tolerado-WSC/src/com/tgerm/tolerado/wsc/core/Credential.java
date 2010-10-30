@@ -28,74 +28,132 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.tgerm.tolerado.wsc.core;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
- * Salesforce login credentials
+ * Salesforce login credential
  * 
  * @author abhinav
  * 
  */
 public class Credential {
+	/*
+	 * API version defaulted to 20.0
+	 */
+	public static final String DEFAULT_API_VERSION = "20.0";
+
+	public enum Environment {
+		ProductionOrDeveloper, Sandbox, PreRelease, Other;
+		public String getHostName() {
+			switch (this) {
+			case ProductionOrDeveloper:
+				return "https://www.salesforce.com";
+			case Sandbox:
+				return "https://test.salesforce.com";
+			case PreRelease:
+				return "https://prerelwww.pre.salesforce.com";
+			case Other:
+				return null;
+			}
+			return null;
+		}
+	}
+
 	private String userName;
 	private String password;
 
+	// For backward compatibility, its defaulted to Production or DE org.
+	// Even that will be the case most of the times
+	private Environment environment;
+	private String hostName;
+	private String apiVersion;
+
+	private String sessionId;
+	private String serverUrl;
+
+	protected Credential() {
+
+	}
+
 	public Credential(String userName, String password) {
-		super();
+		this(userName, password, Environment.ProductionOrDeveloper);
+	}
+
+	public Credential(String userName, String password, Environment environment) {
+		this(userName, password, environment, environment.getHostName());
+	}
+
+	public Credential(String userName, String password,
+			Environment environment, String hostName) {
+		this(userName, password, environment, hostName, DEFAULT_API_VERSION);
+	}
+
+	public Credential(String userName, String password,
+			Environment environment, String hostName, String apiVersion) {
 		this.userName = userName;
 		this.password = password;
+		this.environment = environment;
+		this.hostName = hostName;
+		this.apiVersion = apiVersion;
+	}
+
+	public static Credential createFromSessionToken(String sessionId,
+			String serverUrl) {
+		Credential credential = new Credential();
+		credential.sessionId = sessionId;
+		credential.serverUrl = serverUrl;
+		return credential;
+	}
+
+	public boolean useSessionToken() {
+		return !StringUtils.isBlank(sessionId);
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public String getServerUrl() {
+		return serverUrl;
 	}
 
 	public String getUserName() {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public String getHostName() {
+		return hostName;
+	}
+
+	public String getApiVersion() {
+		return apiVersion;
 	}
 
 	@Override
 	public String toString() {
-		return "Credential [password=" + password + ", userName=" + userName
-				+ "]";
+		return ToStringBuilder.reflectionToString(this,
+				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((password == null) ? 0 : password.hashCode());
-		result = prime * result
-				+ ((userName == null) ? 0 : userName.hashCode());
-		return result;
+		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Credential other = (Credential) obj;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		if (userName == null) {
-			if (other.userName != null)
-				return false;
-		} else if (!userName.equals(other.userName))
-			return false;
-		return true;
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 }
