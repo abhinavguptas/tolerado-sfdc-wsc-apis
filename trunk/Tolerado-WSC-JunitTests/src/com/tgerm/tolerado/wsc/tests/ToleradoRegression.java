@@ -34,8 +34,10 @@ import org.junit.runners.Suite;
 import com.tgerm.tolerado.wsc.tests.apex.ApexTest;
 import com.tgerm.tolerado.wsc.tests.enterprise.AllOrNoneHeaderTest;
 import com.tgerm.tolerado.wsc.tests.enterprise.EnterpriseContactTest;
+import com.tgerm.tolerado.wsc.tests.enterprise.EnterpriseRetryableTest;
 import com.tgerm.tolerado.wsc.tests.metadata.MetadataTest;
 import com.tgerm.tolerado.wsc.tests.partner.PartnerContactTest;
+import com.tgerm.tolerado.wsc.tests.partner.PartnerRetryableTest;
 import com.tgerm.tolerado.wsc.tests.partner.sobject.ExtendingSObjectTest;
 import com.tgerm.tolerado.wsc.tests.partner.sobject.SobjectUsageTest;
 
@@ -43,6 +45,7 @@ import com.tgerm.tolerado.wsc.tests.partner.sobject.SobjectUsageTest;
 @Suite.SuiteClasses({ EnterpriseContactTest.class, PartnerContactTest.class,
 		MetadataTest.class, ApexTest.class, SobjectUsageTest.class,
 		ExtendingSObjectTest.class, AllOrNoneHeaderTest.class,
-		com.tgerm.tolerado.wsc.tests.partner.AllOrNoneHeaderTest.class })
+		com.tgerm.tolerado.wsc.tests.partner.AllOrNoneHeaderTest.class,
+		EnterpriseRetryableTest.class, PartnerRetryableTest.class })
 public class ToleradoRegression {
 }

@@ -46,7 +46,6 @@ import com.sforce.soap.partner.wsc.PartnerConnection;
 import com.sforce.soap.partner.wsc.QueryResult;
 import com.sforce.soap.partner.wsc.SaveResult;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.ToleradoStub;
@@ -73,17 +72,9 @@ public class ToleradoPartnerStub extends ToleradoStub {
 	}
 
 	@Override
-	public void prepare(boolean forceNew) {
-		super.prepare(forceNew);
-		// Create new Partner Connection
-		ConnectorConfig config = new ConnectorConfig();
-		config.setManualLogin(true);
-		// Parter Service Endpoint used from WSCSession
-		config.setServiceEndpoint(session.getPartnerServerUrl());
-		// SFDC Session Id pulled from WSCSession
-		config.setSessionId(session.getSessionId());
+	protected void prepareBinding(boolean forceNew) {
 		try {
-			partnerBinding = Connector.newConnection(config);
+			partnerBinding = Connector.newConnection(connectorConfig);
 		} catch (ConnectionException e) {
 			throw new ToleradoException(
 					"Failed to instantiate PartnerConnection, user:"
@@ -91,10 +82,15 @@ public class ToleradoPartnerStub extends ToleradoStub {
 		}
 	}
 
+	@Override
+	protected String getServiceEndpoint() {
+		return session.getPartnerServerUrl();
+	}
+
 	public void setAllOrNoneHeader(boolean allOrNone) {
 		partnerBinding.setAllOrNoneHeader(allOrNone);
 	}
-	
+
 	/**
 	 * Gives the salesforce login result
 	 * 
@@ -143,6 +139,17 @@ public class ToleradoPartnerStub extends ToleradoStub {
 				QueryResult query = stub.getPartnerBinding().queryMore(
 						queryLocator);
 				return query;
+			}
+		}.invoke(this);
+	}
+
+	public void logout() {
+		new WSRecoverableMethod<Object, ToleradoPartnerStub>("logout") {
+			@Override
+			protected Object invokeActual(ToleradoPartnerStub stub)
+					throws Exception {
+				stub.getPartnerBinding().logout();
+				return null;
 			}
 		}.invoke(this);
 	}

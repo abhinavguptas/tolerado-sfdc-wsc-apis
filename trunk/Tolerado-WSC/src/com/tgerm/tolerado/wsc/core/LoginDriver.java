@@ -28,7 +28,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.tgerm.tolerado.wsc.core;
 
-
 public interface LoginDriver {
+	enum Type {
+		Partner, Enterprise
+	}
+
 	ToleradoSession login(Credential cred);
+	
+	Type getType();
 }

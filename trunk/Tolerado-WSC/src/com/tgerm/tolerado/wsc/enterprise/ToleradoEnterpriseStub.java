@@ -35,7 +35,6 @@ import com.sforce.soap.enterprise.wsc.LoginResult;
 import com.sforce.soap.enterprise.wsc.QueryResult;
 import com.sforce.soap.enterprise.wsc.SaveResult;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.ToleradoStub;
@@ -62,23 +61,20 @@ public class ToleradoEnterpriseStub extends ToleradoStub {
 	}
 
 	@Override
-	public void prepare(boolean forceNew) {
-		super.prepare(forceNew);
-		// Create Enterprise Connection
-		ConnectorConfig entCfg = new ConnectorConfig();
-		entCfg.setManualLogin(true);
-		// Enterprise Service Endpoint used from WSCSession
-		entCfg.setServiceEndpoint(session.getEnterpriseServerUrl());
-		// SFDC Session Id pulled from WSCSession
-		entCfg.setSessionId(session.getSessionId());
+	public void prepareBinding(boolean forceNew) {
 		try {
 			binding = com.sforce.soap.enterprise.wsc.Connector
-					.newConnection(entCfg);
+					.newConnection(connectorConfig);
 		} catch (ConnectionException e) {
 			throw new ToleradoException(
 					"Failed to instantiate EnterpriseConnection, user:"
 							+ credential.getUserName(), e);
 		}
+	}
+
+	@Override
+	protected String getServiceEndpoint() {
+		return session.getEnterpriseServerUrl();
 	}
 
 	/**
@@ -133,6 +129,17 @@ public class ToleradoEnterpriseStub extends ToleradoStub {
 				QueryResult query = stub.getEnterpriseBinding().queryMore(
 						queryLocator);
 				return query;
+			}
+		}.invoke(this);
+	}
+
+	public void logout() {
+		new WSRecoverableMethod<Object, ToleradoEnterpriseStub>("logout") {
+			@Override
+			protected Object invokeActual(ToleradoEnterpriseStub stub)
+					throws Exception {
+				stub.getEnterpriseBinding().logout();
+				return null;
 			}
 		}.invoke(this);
 	}

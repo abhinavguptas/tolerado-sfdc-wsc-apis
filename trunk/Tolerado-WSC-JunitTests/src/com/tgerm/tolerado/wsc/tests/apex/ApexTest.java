@@ -38,6 +38,7 @@ import com.sforce.soap.apex.wsc.RunTestsResult;
 import com.tgerm.tolerado.samples.cfg.LoginCfg;
 import com.tgerm.tolerado.wsc.apex.ToleradoApexStub;
 import com.tgerm.tolerado.wsc.core.Credential;
+import com.tgerm.tolerado.wsc.core.ToleradoSession;
 
 public class ApexTest extends TestCase {
 	private static Log log = LogFactory.getLog(ApexTest.class);
@@ -49,6 +50,21 @@ public class ApexTest extends TestCase {
 		// This call does the rest
 		log.debug("Running All Tests using Apex WSDL");
 		RunTestsResult runResult = aStub.runAllTests();
+		Assert.assertNotNull(runResult);
+	}
+
+	public void testCRUDOnContactViaSessionToken() throws Exception {
+		// Create stub
+		ToleradoApexStub aStub = new ToleradoApexStub(credential);
+		ToleradoSession session = aStub.getSession();
+		Credential tok = Credential.createFromSessionToken(
+				session.getSessionId(), session.getPartnerServerUrl());
+		// Create fresh stub using sessionid and serverurl only
+		// no credential given here
+		ToleradoApexStub stubFromToken = new ToleradoApexStub(tok);
+		// This call does the rest
+		log.debug("Running All Tests using Apex WSDL via Token");
+		RunTestsResult runResult = stubFromToken.runAllTests();
 		Assert.assertNotNull(runResult);
 	}
 }

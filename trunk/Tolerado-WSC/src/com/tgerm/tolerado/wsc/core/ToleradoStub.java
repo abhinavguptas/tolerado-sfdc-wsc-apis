@@ -28,6 +28,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.tgerm.tolerado.wsc.core;
 
+import com.sforce.ws.ConnectorConfig;
+
 /**
  * Base class for all Tolerado Stubs, it gives transparent salesforce session
  * caching. Also, gives api to renew session if required
@@ -36,30 +38,88 @@ package com.tgerm.tolerado.wsc.core;
  * 
  */
 public abstract class ToleradoStub {
+	// Change this, in case you want something lesser
+	public static int DEFAULT_CONNECTOR_READ_TIMEOUT = Integer.MAX_VALUE;
 
-	protected final Credential credential;
+	protected Credential credential;
 	protected ToleradoSession session;
 	protected LoginDriver loginDriver;
+	protected ConnectorConfig connectorConfig;
 
 	public ToleradoStub(Credential c) {
 		// Loads the first available driver to use
 		this(c, LoginDriverLocator.locate());
 	}
 
-	public ToleradoStub(Credential credential, LoginDriver loginDriver) {
+	protected ToleradoStub(Credential credential, LoginDriver loginDriver) {
 		super();
 		this.credential = credential;
 		this.loginDriver = loginDriver;
 		prepare(false);
 	}
 
+	/**
+	 * Prepares SFDC Session either by Making Login calls using Partner or
+	 * Enterprise WSDL. Or by using the session token i.e. SessionId and
+	 * ServerUrl
+	 * 
+	 * @param forceNew
+	 *            If true, SessionCache would be bypassed, and login is done
+	 *            again using user name and password
+	 */
 	public void prepare(boolean forceNew) {
-		session = ToleradoSessionCache.sessionFor(getLoginDriver(), credential,
-				forceNew);
+		if (!credential.useSessionToken()) {
+			session = ToleradoSessionCache.sessionFor(getLoginDriver(),
+					credential, forceNew);
+		} else {
+			session = new ToleradoTokenSession(credential);
+		}
+		// Prepare Connector Config
+		this.connectorConfig = prepareConnectorConfig(session);
+
+		// Give a chance to WSDL specific stubs to prepare
+		prepareBinding(forceNew);
+
 	}
+
+	/**
+	 * Each WSDL, knows the endpoint
+	 * 
+	 * @return
+	 */
+	protected abstract String getServiceEndpoint();
+
+	/**
+	 * WSDL's like partner, apex etc can prepare them self in this call
+	 * 
+	 * @param forceNew
+	 *            Create new Session with salesforce, discarding any caching
+	 *            done internally
+	 */
+	protected abstract void prepareBinding(boolean forceNew);
 
 	public ToleradoSession getSession() {
 		return session;
+	}
+
+	/**
+	 * Override this method, if you want to take control over
+	 * {@link ConnectorConfig}
+	 * 
+	 * @param session
+	 *            Tolerado Session having SessionId and ServerUrl information
+	 * @return A brand new {@link ConnectorConfig}, that is prepared for making
+	 *         authorized webservice calls.
+	 */
+	protected ConnectorConfig prepareConnectorConfig(ToleradoSession session) {
+		// Create Apex Connection
+		ConnectorConfig cfg = new ConnectorConfig();
+		cfg.setManualLogin(true);
+		cfg.setServiceEndpoint(getServiceEndpoint());
+		cfg.setSessionId(session.getSessionId());
+		// This should be good for all
+		cfg.setReadTimeout(DEFAULT_CONNECTOR_READ_TIMEOUT);
+		return cfg;
 	}
 
 	/**

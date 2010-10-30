@@ -29,9 +29,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.tgerm.tolerado.wsc.partner;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -49,11 +51,15 @@ public class ToleradoSobject {
 	/**
 	 * Created once for fast parsing of Sobject later on.
 	 */
-	protected Map<String, XmlObject> msgElementCache = new HashMap<String, XmlObject>();
+	protected Map<String, XmlObject> msgElementCache;
 	/**
 	 * Tracks the changes made to this Sobject instance
 	 */
-	protected Map<String, XmlObject> modifiedMsgElements = new HashMap<String, XmlObject>();
+	protected Map<String, XmlObject> modifiedMsgElements;
+
+	{
+		initCache();
+	}
 
 	/**
 	 * Constructs using the given {@link SObject} instance
@@ -61,12 +67,7 @@ public class ToleradoSobject {
 	 * @param sobj
 	 */
 	public ToleradoSobject(XmlObject sobj) {
-		this.orignalSObj = sobj;
-		Iterator<XmlObject> children = this.orignalSObj.getChildren();
-		while (children.hasNext()) {
-			XmlObject kid = children.next();
-			msgElementCache.put(kid.getName().getLocalPart(), kid);
-		}
+		init(sobj);
 	}
 
 	/**
@@ -76,8 +77,26 @@ public class ToleradoSobject {
 	 *            like Contact, Custom_Object__c
 	 */
 	public ToleradoSobject(String sobjectType) {
+		init(sobjectType);
+	}
+
+	protected void init(XmlObject sobj) {
+		this.orignalSObj = sobj;
+		Iterator<XmlObject> children = this.orignalSObj.getChildren();
+		while (children.hasNext()) {
+			XmlObject kid = children.next();
+			msgElementCache.put(kid.getName().getLocalPart(), kid);
+		}
+	}
+
+	protected void init(String sobjectType) {
 		this.orignalSObj = new SObject();
 		orignalSObj.setField("type", sobjectType);
+	}
+
+	protected void initCache() {
+		msgElementCache = new HashMap<String, XmlObject>();
+		modifiedMsgElements = new HashMap<String, XmlObject>();
 	}
 
 	/**
@@ -85,8 +104,8 @@ public class ToleradoSobject {
 	 * @return Returns reference to the Original {@link SObject} wrapped by this
 	 *         instance
 	 */
-	public SObject getOriginalSObject() {
-		return (SObject) orignalSObj;
+	public XmlObject getOriginalSObject() {
+		return orignalSObj;
 	}
 
 	/**
@@ -102,8 +121,8 @@ public class ToleradoSobject {
 		modified.setId(getId());
 		Collection<XmlObject> updatedElements = modifiedMsgElements.values();
 		for (XmlObject xmlObject : updatedElements) {
-			modified.setField(xmlObject.getName().getLocalPart(), xmlObject
-					.getValue());
+			modified.setField(xmlObject.getName().getLocalPart(),
+					xmlObject.getValue());
 		}
 		return modified;
 	}
@@ -228,7 +247,23 @@ public class ToleradoSobject {
 	public Object getField(String name) {
 		return orignalSObj.getField(name);
 	}
-	
+
+	public List<XmlObject> getChildrens(String relationshipName) {
+		List<XmlObject> sObjects = new ArrayList<XmlObject>();
+		XmlObject relationElement = (XmlObject) msgElementCache
+				.get(relationshipName);
+		Iterator<XmlObject> children = relationElement.getChildren();
+		while (children.hasNext()) {
+			XmlObject nextChild = children.next();
+			// Only children with "records" contain the real Note records,
+			// so skip rest like done, queryLocator and size etc
+			if (!nextChild.getName().getLocalPart().equals("records"))
+				continue;
+			sObjects.add(nextChild);
+		}
+		return sObjects;
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this,

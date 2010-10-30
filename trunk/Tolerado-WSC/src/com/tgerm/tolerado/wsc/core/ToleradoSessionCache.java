@@ -31,8 +31,12 @@ package com.tgerm.tolerado.wsc.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.tgerm.tolerado.wsc.core.LoginDriver.Type;
 
 /**
  * @author abhinav
@@ -40,7 +44,44 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ToleradoSessionCache {
 	private static Log log = LogFactory.getLog(ToleradoSessionCache.class);
-	private static Map<Credential, ToleradoSession> cache = new HashMap<Credential, ToleradoSession>();
+
+	/**
+	 * CacheKey to keep the enterprise and partner login's separate. See this
+	 * Issue, for more details :
+	 * http://code.google.com/p/tolerado-sfdc-wsc-apis/issues/detail?id=2
+	 * 
+	 * @author abhinav
+	 */
+	private static class CacheKey {
+		private final LoginDriver.Type driverType;
+		private final Credential credential;
+
+		public CacheKey(Type driverType, Credential credential) {
+			super();
+			this.driverType = driverType;
+			this.credential = credential;
+		}
+
+		public LoginDriver.Type getDriverType() {
+			return driverType;
+		}
+
+		public Credential getCredential() {
+			return credential;
+		}
+
+		@Override
+		public int hashCode() {
+			return HashCodeBuilder.reflectionHashCode(this);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return EqualsBuilder.reflectionEquals(this, obj);
+		}
+	}
+
+	private static Map<CacheKey, ToleradoSession> cache = new HashMap<CacheKey, ToleradoSession>();
 
 	public static ToleradoSession sessionFor(LoginDriver loginDriver,
 			Credential credential) {
@@ -58,9 +99,14 @@ public class ToleradoSessionCache {
 		}
 	}
 
+	public static void clearCache() {
+		cache.clear();
+	}
+
 	private static ToleradoSession sessionFromCache(Credential cred,
 			LoginDriver loginDriver) {
-		ToleradoSession stub = cache.get(cred);
+		ToleradoSession stub = cache.get(new CacheKey(loginDriver.getType(),
+				cred));
 		if (stub == null) {
 			synchronized (ToleradoSessionCache.class) {
 				if (stub == null) {
@@ -75,7 +121,8 @@ public class ToleradoSessionCache {
 			LoginDriver loginDriver) {
 		log.debug("Login Call for " + cred.getUserName());
 		ToleradoSession session = loginDriver.login(cred);
-		cache.put(cred, session);
+		cache.put(new CacheKey(loginDriver.getType(), cred), session);
 		return session;
 	}
+
 }

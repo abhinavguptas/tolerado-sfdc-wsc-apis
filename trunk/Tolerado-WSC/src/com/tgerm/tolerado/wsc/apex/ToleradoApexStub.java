@@ -33,7 +33,6 @@ import com.sforce.soap.apex.wsc.RunTestsRequest;
 import com.sforce.soap.apex.wsc.RunTestsResult;
 import com.sforce.soap.apex.wsc.SoapConnection;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.ToleradoStub;
@@ -58,24 +57,20 @@ public class ToleradoApexStub extends ToleradoStub {
 	 * required.
 	 */
 	@Override
-	public void prepare(boolean forceNewSession) {
-		super.prepare(forceNewSession);
-		// Create Apex Connection
-		ConnectorConfig apexConfig = new ConnectorConfig();
-		// SFDC Session Id pulled from WSCSession
-		apexConfig.setSessionId(session.getSessionId());
-		String apexEndpoint = session.getApexServerUrl();
-		// Metadata Service Endpoint used from WSCSession
-		apexConfig.setServiceEndpoint(apexEndpoint);
+	protected void prepareBinding(boolean forceNew) {
 		try {
-			apexBinding = Connector.newConnection(apexConfig);
+			apexBinding = Connector.newConnection(connectorConfig);
 		} catch (ConnectionException e) {
 			throw new ToleradoException(
 					"Failed to instantiate ApexConnection, user:"
 							+ credential.getUserName(), e);
 
 		}
+	}
 
+	@Override
+	protected String getServiceEndpoint() {
+		return session.getApexServerUrl();
 	}
 
 	/**
@@ -125,4 +120,5 @@ public class ToleradoApexStub extends ToleradoStub {
 			}
 		}.invoke(this);
 	}
+
 }

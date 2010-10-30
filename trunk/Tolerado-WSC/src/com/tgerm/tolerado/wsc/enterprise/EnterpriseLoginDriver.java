@@ -44,11 +44,9 @@ public class EnterpriseLoginDriver implements LoginDriver {
 
 	private final class EnterpriseSession extends ToleradoSession {
 		private final LoginResult lres;
-		private final LoginDriver loginDriver;
 
-		private EnterpriseSession(LoginResult lres, LoginDriver t) {
+		private EnterpriseSession(LoginResult lres) {
 			this.lres = lres;
-			this.loginDriver = t;
 		}
 
 		@Override
@@ -72,11 +70,6 @@ public class EnterpriseLoginDriver implements LoginDriver {
 		}
 
 		@Override
-		public LoginDriver getLoginDriver() {
-			return loginDriver;
-		}
-
-		@Override
 		public WSErrorHandler getErrorHandler() {
 			return new EnterpriseWSErrorHandler();
 		}
@@ -85,8 +78,13 @@ public class EnterpriseLoginDriver implements LoginDriver {
 	@Override
 	public ToleradoSession login(Credential cred) {
 		EnterpriseLoginWSMethod loginWSMethod = new EnterpriseLoginWSMethod(
-				cred); 
+				cred);
 		final LoginResult lres = loginWSMethod.invoke(null);
-		return new EnterpriseSession(lres, this);
+		return new EnterpriseSession(lres);
+	}
+
+	@Override
+	public Type getType() {
+		return Type.Enterprise;
 	}
 }

@@ -29,11 +29,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.tgerm.tolerado.wsc.metadata;
 
 import com.sforce.soap.metadata.wsc.AsyncResult;
+import com.sforce.soap.metadata.wsc.DeployOptions;
+import com.sforce.soap.metadata.wsc.DeployResult;
 import com.sforce.soap.metadata.wsc.DescribeMetadataResult;
 import com.sforce.soap.metadata.wsc.MetadataConnection;
 import com.sforce.soap.metadata.wsc.RetrieveRequest;
+import com.sforce.soap.metadata.wsc.RetrieveResult;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.ToleradoStub;
@@ -54,23 +56,21 @@ public class ToleradoMetaStub extends ToleradoStub {
 	}
 
 	@Override
-	public void prepare(boolean forceNew) {
-		super.prepare(forceNew);
-		// Create Metadata Connection
-		ConnectorConfig metadataConfig = new ConnectorConfig();
-		// SFDC Session Id pulled from WSCSession
-		metadataConfig.setSessionId(session.getSessionId());
-		// Metadata Service Endpoint used from WSCSession
-		metadataConfig.setServiceEndpoint(session.getMetadataServerUrl());
+	public void prepareBinding(boolean forceNew) {
 		try {
 			binding = com.sforce.soap.metadata.wsc.Connector
-					.newConnection(metadataConfig);
+					.newConnection(connectorConfig);
 		} catch (ConnectionException e) {
 			throw new ToleradoException(
 					"Failed to instantiate MetadataConnection, user:"
 							+ credential.getUserName(), e);
 		}
 
+	}
+
+	@Override
+	protected String getServiceEndpoint() {
+		return session.getMetadataServerUrl();
 	}
 
 	/**
@@ -99,6 +99,50 @@ public class ToleradoMetaStub extends ToleradoStub {
 			protected DescribeMetadataResult invokeActual(ToleradoMetaStub stub)
 					throws Exception {
 				return getMetaBinding().describeMetadata(asOfVersion);
+			}
+		}.invoke(this);
+	}
+
+	public AsyncResult[] checkStatus(final String[] asyncProcessId) {
+		return new WSRecoverableMethod<AsyncResult[], ToleradoMetaStub>(
+				"checkStatus") {
+			@Override
+			protected AsyncResult[] invokeActual(ToleradoMetaStub stub)
+					throws Exception {
+				return getMetaBinding().checkStatus(asyncProcessId);
+			}
+		}.invoke(this);
+	}
+
+	public RetrieveResult checkRetrieveStatus(final String asyncProcessId) {
+		return new WSRecoverableMethod<RetrieveResult, ToleradoMetaStub>(
+				"checkRetrieveStatus") {
+			@Override
+			protected RetrieveResult invokeActual(ToleradoMetaStub stub)
+					throws Exception {
+				return getMetaBinding().checkRetrieveStatus(asyncProcessId);
+			}
+		}.invoke(this);
+	}
+
+	public AsyncResult deploy(final byte[] zipFile,
+			final DeployOptions deployOptions) {
+		return new WSRecoverableMethod<AsyncResult, ToleradoMetaStub>("deploy") {
+			@Override
+			protected AsyncResult invokeActual(ToleradoMetaStub stub)
+					throws Exception {
+				return getMetaBinding().deploy(zipFile, deployOptions);
+			}
+		}.invoke(this);
+	}
+
+	public DeployResult checkDeployStatus(final String asyncProcessId) {
+		return new WSRecoverableMethod<DeployResult, ToleradoMetaStub>(
+				"checkDeployStatus") {
+			@Override
+			protected DeployResult invokeActual(ToleradoMetaStub stub)
+					throws Exception {
+				return getMetaBinding().checkDeployStatus(asyncProcessId);
 			}
 		}.invoke(this);
 	}

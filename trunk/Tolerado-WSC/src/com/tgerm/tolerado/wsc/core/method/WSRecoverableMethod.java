@@ -58,7 +58,7 @@ import com.tgerm.tolerado.wsc.partner.ToleradoPartnerStub;
  * 	&#064;Override
  * 	protected RunTestsResult invokeActual(ToleradoApexStub stub)
  * 			throws Exception {
- * 		// The real web service call done here using the Apex Binding 
+ * 		// The real web service call done here using the Apex Binding
  * 		// available in stub
  * 		return stub.getApexBinding().runTests(runTestsRequest);
  * 	}
@@ -117,10 +117,20 @@ public abstract class WSRecoverableMethod<Result, Stub extends ToleradoStub> {
 							+ ", ExceptionMsg: " + exc.getMessage());
 
 					// If Session is invalid, re login otherwise sleep.
-					if (isLoginExpired(exc))
-						// if login is required re-login other wise sleep
-						reLogin(stub);
-					else {
+					if (isLoginExpired(exc)) {
+						// Check if stub was created from sessionId or from
+						// user/pass.
+						// if the stub was created from session id, we can't do
+						// auto relogin
+						if (stub != null && !stub.getCredential().useSessionToken()) {
+							// if login is required re-login other wise sleep
+							reLogin(stub);
+						} else {
+							throw new ToleradoException(
+									"SFDC Session expired ", exc);
+						}
+
+					} else {
 						waitBeforeNextRetry();
 					}
 				} else {
@@ -185,7 +195,7 @@ public abstract class WSRecoverableMethod<Result, Stub extends ToleradoStub> {
 	 * Renews the user's session, if login was previously expired
 	 * 
 	 * @param stub
-	 *            The {@link ToleradoPartnerStub} instance
+	 *            The {@link ToleradoStub} instance
 	 */
 	protected void reLogin(Stub stub) {
 		if (stub != null) {

@@ -40,9 +40,7 @@ public abstract class ToleradoSession {
 	public abstract String getSessionId();
 
 	public abstract Object getLoginResult();
-	
-	public abstract LoginDriver getLoginDriver();
-	
+
 	public abstract WSErrorHandler getErrorHandler();
 
 	public String getPartnerServerUrl() {
@@ -57,4 +55,14 @@ public abstract class ToleradoSession {
 		return getMetadataServerUrl().replaceAll("/m/", "/s/");
 	}
 
+	@Override
+	public String toString() {
+		return new StringBuffer().append("ToleradoSession[")
+				.append("SessionId=").append(getSessionId())
+				.append("\n, MetadataUrl=").append(getMetadataServerUrl())
+				.append("\n, ApexUrl=").append(getApexServerUrl())
+				.append("\n, EnterpriseUrl=").append(getEnterpriseServerUrl())
+				.append("\n, PartnerUrl=").append(getPartnerServerUrl())
+				.append("]").toString();
+	}
 }

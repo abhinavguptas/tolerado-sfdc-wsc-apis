@@ -64,4 +64,12 @@ public class CoreUtil {
 		return strWriter.getBuffer().toString();
 	}
 
+	public static String toPartnerEndPoint(Credential cred) {
+		return cred.getHostName() + "/services/Soap/u/" + cred.getApiVersion();
+	}
+
+	public static String toEnterpriseEndPoint(Credential cred) {
+		return cred.getHostName() + "/services/Soap/c/" + cred.getApiVersion();
+	}
+
 }
