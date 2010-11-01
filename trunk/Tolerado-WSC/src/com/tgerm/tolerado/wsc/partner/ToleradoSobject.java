@@ -29,15 +29,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.tgerm.tolerado.wsc.partner;
 
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -46,6 +51,11 @@ import com.sforce.ws.bind.XmlObject;
 import com.sforce.ws.wsdl.Constants;
 
 public class ToleradoSobject {
+	public static SimpleDateFormat WS_DATETIME_FORMAT = new SimpleDateFormat(
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	static {
+		WS_DATETIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
 
 	protected XmlObject orignalSObj;
 	/**
@@ -135,8 +145,12 @@ public class ToleradoSobject {
 		orignalSObj.setField("Id", Id);
 	}
 
-	public String getType() {
+	public final String getType() {
 		return (String) orignalSObj.getField("type");
+	}
+
+	public final void setType(String type) {
+		setAttribute("type", type);
 	}
 
 	/**
@@ -218,6 +232,18 @@ public class ToleradoSobject {
 		return val != null ? Boolean.parseBoolean(val.toString()) : null;
 	}
 
+	public void setBoolValue(String attributeName, String value) {
+		if (StringUtils.isBlank(value))
+			return;
+		setAttribute(attributeName, Boolean.parseBoolean(value));
+	}
+
+	public void setDatetime(String attributeName, String value) {
+		if (StringUtils.isBlank(value))
+			return;
+		setAttribute(attributeName, parseDate(value));
+	}
+
 	/**
 	 * Returns the {@link BigInteger} value for the given attribute name
 	 * 
@@ -262,6 +288,14 @@ public class ToleradoSobject {
 			sObjects.add(nextChild);
 		}
 		return sObjects;
+	}
+
+	static Date parseDate(String arg) {
+		try {
+			return WS_DATETIME_FORMAT.parse(arg);
+		} catch (ParseException e) {
+			throw new RuntimeException("Failing to parse date:" + arg, e);
+		}
 	}
 
 	@Override
