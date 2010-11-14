@@ -5,7 +5,7 @@ Explains, what contributes to a Tolerado releases
  * Added support to use either Product, Developer, Sandbox, Prerelease or Custom Org Type(Enviornment) with Tolerado. Now one can feed in either the Enviornment or the hostname to use for authorizing with Salesforce.
  * Added support to specify Salesforce API version to Tolerado stubs. That means more control if you still want to stuck with previous API version.
  * Tolerado Sobject, internal changes for more flexiblity in extending and changing behavior like caching. 
-   * Added new method "List<XmlObject> getChildrens(String relationshipName)"
+   * Added new method List<XmlObject> getChildrens(String relationshipName)
    * Added final getType(), setType() methods, to get/set SObjectType.
    * Deprecated setAttribute(String attribName) to match with getters like getValue(String) getTextValue(String) etc, we are promoting setValue(String, Object), This method(setAttribute) might be removed in future releases. 
  * Simplified design of Tolerado stubs, to facilitate easy extensions.
