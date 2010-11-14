@@ -59,10 +59,10 @@ public class ContactSObject extends ToleradoSobject {
 
 	public void setFirstName(String val) {
 		// delegates to setAttribute for setting the correct attribute.
-		setAttribute("FirstName", val);
+		setField("FirstName", val);
 	}
 
 	public void setLastName(String val) {
-		setAttribute("LastName", val);
+		setField("LastName", val);
 	}
 }
