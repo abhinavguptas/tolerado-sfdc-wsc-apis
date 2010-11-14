@@ -74,8 +74,8 @@ public class SobjectUsageTest extends TestCase {
 		// Create new contact
 		//
 		ToleradoSobject contact = new ToleradoSobject("Contact");
-		contact.setField("FirstName", "Abhinav");
-		contact.setField("LastName", "Gupta");
+		contact.setValue("FirstName", "Abhinav");
+		contact.setValue("LastName", "Gupta");
 		log.debug("Created ToleradoSobject: " + contact);
 		// Get the updated Sobejct
 		SObject[] sObjects = new SObject[] { contact.getUpdatedSObject() };
@@ -137,7 +137,7 @@ public class SobjectUsageTest extends TestCase {
 		Assert.assertEquals(tSobj.getNestedValue("CreatedBy", "Username"),
 				credential.getUserName());
 
-		tSobj.setField("FirstName", "Abhinav2");
+		tSobj.setValue("FirstName", "Abhinav2");
 		SObject updatedSObject = tSobj.getUpdatedSObject();
 
 		sObjects = new SObject[] { updatedSObject };
@@ -163,9 +163,9 @@ public class SobjectUsageTest extends TestCase {
 	private static ToleradoSobject createNote(String cId, String noteBody,
 			String noteTitle) {
 		ToleradoSobject note = new ToleradoSobject("Note");
-		note.setField("Body", noteBody);
-		note.setField("Title", noteTitle);
-		note.setField("ParentId", cId);
+		note.setValue("Body", noteBody);
+		note.setValue("Title", noteTitle);
+		note.setValue("ParentId", cId);
 		return note;
 	}
 
