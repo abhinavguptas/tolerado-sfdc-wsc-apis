@@ -28,6 +28,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.tgerm.tolerado.wsc.tests.partner;
 
+import java.util.Date;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -41,6 +43,7 @@ import com.sforce.soap.partner.wsc.SaveResult;
 import com.tgerm.tolerado.samples.cfg.LoginCfg;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.partner.ToleradoPartnerStub;
+import com.tgerm.tolerado.wsc.partner.ToleradoSobject;
 
 public class PartnerContactTest extends TestCase {
 	private static Log log = LogFactory.getLog(PartnerContactTest.class);
@@ -125,7 +128,7 @@ public class PartnerContactTest extends TestCase {
 	private SObject queryAndAssertContact(ToleradoPartnerStub stub) {
 		log.debug("Querying Contact having recordId:" + savedContactId);
 		QueryResult queryResult = stub
-				.query("select Id, FirstName, LastName from Contact where Id ='"
+				.query("select Id, FirstName, LastName, LastModifiedDate from Contact where Id ='"
 						+ savedContactId + "'");
 
 		Assert.assertNotNull(queryResult);
@@ -133,9 +136,11 @@ public class PartnerContactTest extends TestCase {
 		// Only 1 contact should come
 		Assert.assertEquals(queryResult.getRecords().length, 1);
 		// Contact just retrieved
-		SObject contactFetched = queryResult.getRecords()[0];
-		Assert.assertEquals(contactFetched.getField("FirstName"), firstName);
-		Assert.assertEquals(contactFetched.getField("LastName"), lastName);
-		return contactFetched;
+		ToleradoSobject contactFetched = new ToleradoSobject(queryResult.getRecords()[0]);
+		Assert.assertEquals(contactFetched.getValue("FirstName"), firstName);
+		Assert.assertEquals(contactFetched.getValue("LastName"), lastName);
+		Date datetimeValue = contactFetched.getDatetimeValue("LastModifiedDate");
+		Assert.assertNotNull(datetimeValue);
+		return (SObject) contactFetched.getOriginalSObject();
 	}
 }
