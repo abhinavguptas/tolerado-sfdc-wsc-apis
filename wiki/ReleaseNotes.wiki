@@ -1,5 +1,23 @@
 Explains, what contributes to a Tolerado releases
 
+= 1.1 (14 Nov 2010) =
+ * Added support to use all Tolerado stubs with only sessionId and serverUrl in hand. Previously username/password was a must. Retrying on errors 
+ * Added support to use either Product, Developer, Sandbox, Prerelease or Custom Org Type(Enviornment) with Tolerado. Now one can feed in either the Enviornment or the hostname to use for authorizing with Salesforce.
+ * Added support to specify Salesforce API version to Tolerado stubs. That means more control if you still want to stuck with previous API version.
+ * Tolerado Sobject, internal changes for more flexiblity in extending and changing behavior like caching. 
+   * Added new method "List<XmlObject> getChildrens(String relationshipName)"
+   * Added final getType(), setType() methods, to get/set SObjectType.
+   * Deprecated setAttribute(String attribName) to match with getters like getValue(String) getTextValue(String) etc, we are promoting setValue(String, Object), This method(setAttribute) might be removed in future releases. 
+ * Simplified design of Tolerado stubs, to facilitate easy extensions.
+ * Removed getLoginDriver() from ToleradoSession API contract. 
+ * ToleradoMetaStub for metadata wsdl, has new recoverable calls like 
+   * AsyncResult[] checkStatus(final String[] asyncProcessId) 
+   * RetrieveResult checkRetrieveStatus(final String asyncProcessId)
+   * AsyncResult deploy(final byte[] zipFile, final DeployOptions deployOptions)
+   * DeployResult checkDeployStatus(final String asyncProcessId)
+ * Added logout() call to both Tolerado Partner & Enterprise stubs.
+
+ 
 = 1.0.1 (27 Oct 2010) =
 
  * Upgraded to latest WSC-API (wsc-20.jar)
