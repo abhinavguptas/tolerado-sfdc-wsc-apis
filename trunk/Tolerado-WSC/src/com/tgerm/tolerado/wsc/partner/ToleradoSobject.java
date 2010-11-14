@@ -121,7 +121,7 @@ public class ToleradoSobject {
 	/**
 	 * @return Returns the updated sobject. "Updated" {@link SObject} means any
 	 *         changes done to this instance via
-	 *         {@link ToleradoSobject#setAttribute(String, Object)}. One can use
+	 *         {@link ToleradoSobject#setField(String, Object)}. One can use
 	 *         that Sobject directly in Partner update or create calls
 	 */
 	public SObject getUpdatedSObject() {
@@ -150,7 +150,29 @@ public class ToleradoSobject {
 	}
 
 	public final void setType(String type) {
-		setAttribute("type", type);
+		setField("type", type);
+	}
+
+	/**
+	 * An all in one setter for Sobject. Just mention the attribute to update
+	 * and the new value, it will handle the rest.
+	 * 
+	 * @param attribName
+	 *            Attribute Name to update
+	 * @param newVal
+	 *            new value of attribute
+	 * @deprecated to match with getters like {@link #getValue(String)}
+	 *             {@link #getTextValue(String)} etc, we are promoting
+	 *             {@link #setField(String, Object)}, This method might be
+	 *             removed in future releases.
+	 */
+	public void setAttribute(String attribName, Object newVal) {
+		XmlObject xobj = new XmlObject(new QName(Constants.PARTNER_SOBJECT_NS,
+				attribName), newVal);
+		// Log this as a change
+		modifiedMsgElements.put(attribName, xobj);
+		// Update the original mapping to, so that getters are working correctly
+		msgElementCache.put(attribName, xobj);
 	}
 
 	/**
@@ -162,13 +184,8 @@ public class ToleradoSobject {
 	 * @param newVal
 	 *            new value of attribute
 	 */
-	public void setAttribute(String attribName, Object newVal) {
-		XmlObject xobj = new XmlObject(new QName(Constants.PARTNER_SOBJECT_NS,
-				attribName), newVal);
-		// Log this as a change
-		modifiedMsgElements.put(attribName, xobj);
-		// Update the original mapping to, so that getters are working correctly
-		msgElementCache.put(attribName, xobj);
+	public void setField(String attribName, Object newVal) {
+		setAttribute(attribName, newVal);
 	}
 
 	public XmlObject getLookupObject(String lookupName) {
@@ -235,13 +252,13 @@ public class ToleradoSobject {
 	public void setBoolValue(String attributeName, String value) {
 		if (StringUtils.isBlank(value))
 			return;
-		setAttribute(attributeName, Boolean.parseBoolean(value));
+		setField(attributeName, Boolean.parseBoolean(value));
 	}
 
 	public void setDatetime(String attributeName, String value) {
 		if (StringUtils.isBlank(value))
 			return;
-		setAttribute(attributeName, parseDate(value));
+		setField(attributeName, parseDate(value));
 	}
 
 	/**
@@ -268,6 +285,19 @@ public class ToleradoSobject {
 	public Double getDoubleValue(String attributeName) {
 		Object val = getValue(attributeName);
 		return val != null ? Double.parseDouble(val.toString()) : null;
+	}
+
+	/**
+	 * Returns the {@link Date} value for the given attribute name
+	 * 
+	 * @param attributeName
+	 *            Name of attribute or Sobject field whose value should be
+	 *            fetched
+	 * @return Date value of the attribute
+	 */
+	public Date getDatetimeValue(String attributeName) {
+		Object val = getValue(attributeName);
+		return val != null ? parseDate(val.toString()) : null;
 	}
 
 	public Object getField(String name) {
