@@ -1,7 +1,8 @@
 Explains, what contributes to a Tolerado releases
 
 = 1.1 (14 Nov 2010) =
- * Added support to use all Tolerado stubs with only sessionId and serverUrl in hand. Previously username/password was a must. Retrying on errors 
+ * Added support to use all Tolerado stubs with only sessionId and serverUrl in hand. Previously username/password was a must. [http://code.google.com/p/tolerado-sfdc-wsc-apis/issues/detail?id=1 Issue 1]
+ * Fixed cache sharing issue between enterprise and partner sessions [http://code.google.com/p/tolerado-sfdc-wsc-apis/issues/detail?id=2 Issue 2] 
  * Added support to use either Product, Developer, Sandbox, Prerelease or Custom Org Type(Enviornment) with Tolerado. Now one can feed in either the Enviornment or the hostname to use for authorizing with Salesforce.
  * Added support to specify Salesforce API version to Tolerado stubs. That means more control if you still want to stuck with previous API version.
  * Tolerado Sobject, internal changes for more flexiblity in extending and changing behavior like caching. 
