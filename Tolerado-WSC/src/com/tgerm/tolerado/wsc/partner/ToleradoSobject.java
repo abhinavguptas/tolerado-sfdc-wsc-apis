@@ -121,7 +121,7 @@ public class ToleradoSobject {
 	/**
 	 * @return Returns the updated sobject. "Updated" {@link SObject} means any
 	 *         changes done to this instance via
-	 *         {@link ToleradoSobject#setField(String, Object)}. One can use
+	 *         {@link ToleradoSobject#setValue(String, Object)}. One can use
 	 *         that Sobject directly in Partner update or create calls
 	 */
 	public SObject getUpdatedSObject() {
@@ -150,7 +150,7 @@ public class ToleradoSobject {
 	}
 
 	public final void setType(String type) {
-		setField("type", type);
+		setValue("type", type);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class ToleradoSobject {
 	 *            new value of attribute
 	 * @deprecated to match with getters like {@link #getValue(String)}
 	 *             {@link #getTextValue(String)} etc, we are promoting
-	 *             {@link #setField(String, Object)}, This method might be
+	 *             {@link #setValue(String, Object)}, This method might be
 	 *             removed in future releases.
 	 */
 	public void setAttribute(String attribName, Object newVal) {
@@ -184,7 +184,7 @@ public class ToleradoSobject {
 	 * @param newVal
 	 *            new value of attribute
 	 */
-	public void setField(String attribName, Object newVal) {
+	public void setValue(String attribName, Object newVal) {
 		setAttribute(attribName, newVal);
 	}
 
@@ -252,13 +252,13 @@ public class ToleradoSobject {
 	public void setBoolValue(String attributeName, String value) {
 		if (StringUtils.isBlank(value))
 			return;
-		setField(attributeName, Boolean.parseBoolean(value));
+		setValue(attributeName, Boolean.parseBoolean(value));
 	}
 
 	public void setDatetime(String attributeName, String value) {
 		if (StringUtils.isBlank(value))
 			return;
-		setField(attributeName, parseDate(value));
+		setValue(attributeName, parseDate(value));
 	}
 
 	/**
