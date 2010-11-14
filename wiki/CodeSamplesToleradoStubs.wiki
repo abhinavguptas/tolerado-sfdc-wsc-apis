@@ -1,6 +1,19 @@
 = Introduction =
 ToleradoStubs are meant to provide transparent fault tolerance, caching and house keeping of Saelsforce Apache Axis Stubs. This post shows some code samples about ToleradoStub for Salesforce partner, apex and metadata WSDLs
 
+= Tolerado Stubs using Session Id and Server URL ONLY ! =
+{{{
+// Creating credentials using SessionId/ServerUrl
+// New helper method Credential:createFromSessionToken 
+Credential cred = Credential.createFromSessionToken("SessionId", "ServerUrl");
+// Create stub using sessionid and serverurl only
+// no credential given here
+ToleradoPartnerStub stub = new ToleradoPartnerStub(cred);
+QueryResult qr = stub.query("Select Name from Contact LIMIT 1");
+SObject[] records = qr.getRecords();
+Assert.assertEquals(1, records.length); 
+}}}
+
 = Partner WSDL – ToleradoStub Code sample =
 
 == Querying Records - Sample ==
