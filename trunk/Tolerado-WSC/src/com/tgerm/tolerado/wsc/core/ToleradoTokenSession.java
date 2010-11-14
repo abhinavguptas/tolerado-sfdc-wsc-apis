@@ -31,6 +31,9 @@ package com.tgerm.tolerado.wsc.core;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.namespace.QName;
+
+import com.sforce.ws.SoapFaultException;
 import com.tgerm.tolerado.wsc.core.method.WSErrorHandler;
 
 public class ToleradoTokenSession extends ToleradoSession {
@@ -83,9 +86,18 @@ public class ToleradoTokenSession extends ToleradoSession {
 			}
 
 			@Override
-			protected boolean canRetryForWSDL(Exception ex) {
+			public boolean canRetryForWSDL(Exception t) {
+				// SoapFaultException is in testing, not sure if its getting
+				// fault codes correctly
+				if (t instanceof SoapFaultException) {
+					QName faultCode = ((SoapFaultException) t).getFaultCode();
+					if (faultCode != null)
+						return RETRYABLES.contains(faultCode.getLocalPart()
+								.toLowerCase());
+				}
 				return false;
 			}
+
 		};
 	}
 
