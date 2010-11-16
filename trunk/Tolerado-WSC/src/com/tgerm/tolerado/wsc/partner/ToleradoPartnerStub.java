@@ -45,11 +45,15 @@ import com.sforce.soap.partner.wsc.LoginResult;
 import com.sforce.soap.partner.wsc.PartnerConnection;
 import com.sforce.soap.partner.wsc.QueryResult;
 import com.sforce.soap.partner.wsc.SaveResult;
+import com.sforce.soap.partner.wsc.UpsertResult;
 import com.sforce.ws.ConnectionException;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 import com.tgerm.tolerado.wsc.core.ToleradoStub;
 import com.tgerm.tolerado.wsc.core.method.WSRecoverableMethod;
+import com.tgerm.tolerado.wsc.partner.method.CreateSobjectsMethod;
+import com.tgerm.tolerado.wsc.partner.method.UpdateSobjectsMethod;
+import com.tgerm.tolerado.wsc.partner.method.UpsertSobjectsMethod;
 
 /**
  * {@link ToleradoPartnerStub} for partner WSDL
@@ -180,25 +184,29 @@ public class ToleradoPartnerStub extends ToleradoStub {
 	}
 
 	public SaveResult[] create(final SObject[] sObjects) {
-		return new WSRecoverableMethod<SaveResult[], ToleradoPartnerStub>(
-				"create") {
-			@Override
-			protected SaveResult[] invokeActual(ToleradoPartnerStub stub)
-					throws Exception {
-				return stub.getPartnerBinding().create(sObjects);
-			}
-		}.invoke(this);
+		return new CreateSobjectsMethod(sObjects).invoke(this);
+	} 
+
+	public SaveResult[] create(final SObject[] sObjects,
+			boolean throwErrorOnSaveFailure) {
+		return new CreateSobjectsMethod(sObjects, throwErrorOnSaveFailure)
+				.invoke(this);
 	}
 
 	public SaveResult[] update(final SObject[] sObjects) {
-		return new WSRecoverableMethod<SaveResult[], ToleradoPartnerStub>(
-				"update") {
-			@Override
-			protected SaveResult[] invokeActual(ToleradoPartnerStub stub)
-					throws Exception {
-				return stub.getPartnerBinding().update(sObjects);
-			}
-		}.invoke(this);
+		return new UpdateSobjectsMethod(sObjects).invoke(this);
+	}
+
+	public SaveResult[] update(final SObject[] sObjects,
+			boolean throwErrorOnSaveFailure) {
+		return new UpdateSobjectsMethod(sObjects, throwErrorOnSaveFailure)
+				.invoke(this);
+	}
+
+	public UpsertResult[] upsert(final SObject[] sObjects,
+			String externalIDFieldName, boolean throwErrorOnSaveFailure) {
+		return new UpsertSobjectsMethod(externalIDFieldName, sObjects,
+				throwErrorOnSaveFailure).invoke(this);
 	}
 
 	public DescribeDataCategoryGroupResult[] describeDataCategoryGroups(

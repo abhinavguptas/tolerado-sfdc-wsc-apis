@@ -228,7 +228,8 @@ public class ToleradoSobject {
 	 * @return Text value of the attribute
 	 */
 	public String getTextValue(String attributeName) {
-		return (String) getValue(attributeName);
+		Object value = getValue(attributeName);
+		return value != null ? value.toString() : null;
 	}
 
 	public Object getValue(String attributeName) {
