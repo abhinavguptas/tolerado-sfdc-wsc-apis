@@ -32,6 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import com.sforce.soap.partner.wsc.DeleteResult;
 import com.sforce.soap.partner.wsc.SaveResult;
+import com.sforce.soap.partner.wsc.UpsertResult;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
 
 /**
@@ -83,6 +84,18 @@ public class PartnerUtil {
 		}
 	}
 
+	public static void checkSuccess(UpsertResult[] results) {
+		if (!ArrayUtils.isEmpty(results)) {
+			for (UpsertResult saveResult : results) {
+				if (saveResult.isSuccess())
+					continue;
+				String errString = toErrorString(saveResult.getErrors());
+				throw new ToleradoException("Create/Update failed. Cause: "
+						+ errString);
+			}
+		}
+	}
+
 	/**
 	 * Prepares an error string for all {@link Error} objects in the argument
 	 * 
@@ -98,10 +111,11 @@ public class PartnerUtil {
 		StringBuilder buffer = new StringBuilder();
 		for (com.sforce.soap.partner.wsc.Error error : errors) {
 			String[] fields = error.getFields();
-			buffer.append(System.getProperty("line.separator")).append(
-					error.toString()).append(", Fields=").append(toCSV(fields))
-					.append(", StatusCode=").append(error.getStatusCode())
-					.append(", Message=").append(error.getMessage());
+			buffer.append(System.getProperty("line.separator"))
+					.append(error.toString()).append(", Fields=")
+					.append(toCSV(fields)).append(", StatusCode=")
+					.append(error.getStatusCode()).append(", Message=")
+					.append(error.getMessage());
 		}
 		return buffer.toString();
 	}
