@@ -1,0 +1,14 @@
+How to use Tolerado with Google App Engine
+
+= CLASSPATH =
+
+As suggested in [http://code.google.com/p/sfdc-wsc/wiki/WscFromGae WSC Getting Started Guide]. Download([http://code.google.com/p/sfdc-wsc/downloads/list from here]) and copy these files to the /war/WEB-INF/lib/ directory of the GAE war file.
+ * wsc-XX.jar
+ * wsc-gae.jar
+
+*Note*: You don't need to download partner-XX.jar as suggested in WSC guide. Rather, use the sfdc-wsc-xx-partner.jar available in Tolerado download are [http://code.google.com/p/tolerado-sfdc-wsc-apis/downloads/list here(sfdc-wsc-20-wsdl2java.zip)]. This is because
+ * partner-xx.jar is not updated since April 2010 
+ * Tolerado's partner jar is complied for addressing ClassCast issues faced when used with Axis. See this issue on WSC forum : http://code.google.com/p/sfdc-wsc/issues/detail?id=15
+ 
+
+= Introduction =
