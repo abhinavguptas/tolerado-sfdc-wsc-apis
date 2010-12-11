@@ -29,6 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.tgerm.tolerado.wsc.core;
 
 import com.sforce.ws.ConnectorConfig;
+import com.sforce.ws.transport.JdkHttpTransport;
 
 /**
  * Base class for all Tolerado Stubs, it gives transparent salesforce session
@@ -40,7 +41,12 @@ import com.sforce.ws.ConnectorConfig;
 public abstract class ToleradoStub {
 	// Change this, in case you want something lesser
 	public static int DEFAULT_CONNECTOR_READ_TIMEOUT = Integer.MAX_VALUE;
-
+	
+	/**
+	 * Change this to tweak the transport to be used with WSC
+	 */
+	public static Class<?> WSC_HTTP_TRANSPORT = null;
+	
 	protected Credential credential;
 	protected ToleradoSession session;
 	protected LoginDriver loginDriver;
@@ -114,6 +120,9 @@ public abstract class ToleradoStub {
 	protected ConnectorConfig prepareConnectorConfig(ToleradoSession session) {
 		// Create Apex Connection
 		ConnectorConfig cfg = new ConnectorConfig();
+		if (WSC_HTTP_TRANSPORT != null) {
+			cfg.setTransport(WSC_HTTP_TRANSPORT);
+		}
 		cfg.setManualLogin(true);
 		cfg.setServiceEndpoint(getServiceEndpoint());
 		cfg.setSessionId(session.getSessionId());

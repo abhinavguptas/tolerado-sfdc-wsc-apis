@@ -37,6 +37,7 @@ import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.CoreUtil;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
+import com.tgerm.tolerado.wsc.core.ToleradoStub;
 import com.tgerm.tolerado.wsc.core.method.WSErrorHandler;
 import com.tgerm.tolerado.wsc.core.method.WSRecoverableMethod;
 
@@ -81,7 +82,9 @@ public class PartnerLoginWSMethod extends
 		ConnectorConfig partnerConfig = new ConnectorConfig();
 		// IMPORTANT : This will not let PartnerConnection do the login
 		partnerConfig.setManualLogin(true);
-		
+		if (ToleradoStub.WSC_HTTP_TRANSPORT != null) {
+			partnerConfig.setTransport(ToleradoStub.WSC_HTTP_TRANSPORT);
+		}
 		// Prepare End point URL as per the Env, API Version and Host 
 		String endpoint = CoreUtil.toPartnerEndPoint(credential);
 		partnerConfig.setAuthEndpoint(endpoint);
