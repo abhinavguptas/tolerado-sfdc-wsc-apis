@@ -37,6 +37,7 @@ import com.sforce.ws.ConnectorConfig;
 import com.tgerm.tolerado.wsc.core.CoreUtil;
 import com.tgerm.tolerado.wsc.core.Credential;
 import com.tgerm.tolerado.wsc.core.ToleradoException;
+import com.tgerm.tolerado.wsc.core.ToleradoStub;
 import com.tgerm.tolerado.wsc.core.method.WSErrorHandler;
 import com.tgerm.tolerado.wsc.core.method.WSRecoverableMethod;
 
@@ -79,6 +80,9 @@ public class EnterpriseLoginWSMethod extends
 	protected LoginResult invokeActual(ToleradoEnterpriseStub stub)
 			throws Exception {
 		ConnectorConfig entConfig = new ConnectorConfig();
+		if (ToleradoStub.WSC_HTTP_TRANSPORT != null) {
+			entConfig.setTransport(ToleradoStub.WSC_HTTP_TRANSPORT);
+		}
 		// IMPORTANT : This will not let EnterpriseConnection do the login
 		entConfig.setManualLogin(true);
 
